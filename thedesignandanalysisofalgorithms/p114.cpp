@@ -13,34 +13,42 @@ using namespace std;
 class Solution{
 public:
     vector<vector<int>> generatesubset(vector<int> nums){
-        sort(nums.begin(),nums.end());
         vector<vector<int>> result;
-        int size=nums.size();
-        vector<int> graycode=graycode2(size);
+        if(nums.empty()) return result;
+        vector<int> graycode=graycode1(nums.size());
         for(int i=0;i<graycode.size();++i){
-            result.push_back(vector<int>());
-            for(int j=0;j<size;++j)
-                if(graycode[i]&(1<<j)) result[i].push_back(nums[j]);
+            vector<int> subset;
+            int bit=1;
+            for(int j=0;j<nums.size();++j){
+                if(graycode[i]&bit) subset.push_back(nums[j]);
+                bit<<=1;
+            }
+            result.push_back(subset);
         }
         return result;
     }
 private:
     vector<int> graycode1(int n){
-        vector<int> result;
-        result.reserve(1<<n);
-        result.push_back(0);
-        for(int i=0;i<n;++i){
-            int highest_bit=1<<i;
-            for(int j=result.size()-1;j>=0;--j)
-                result.push_back(highest_bit|result[j]);
-        }
-        return result;
+        vector<int> graycode;
+        int size=1<<n;
+        graycode.reserve(size);
+        for(int i=0;i<size;++i)
+            graycode.push_back(i^(i>>1));
+        return graycode;
     }
     vector<int> graycode2(int n){
-        vector<int> result;
-        for(int i=0;i<1<<n;++i)
-            result.push_back(i^(i/2));
-        return result;
+        vector<int> graycode;
+        graycode.reserve(1<<n);
+        graycode.push_back(0);
+        int highest_bit=1;
+        for(int i=0;i<n;++i){
+            for(int j=highest_bit-1;j>=0;--j)
+                graycode.push_back(highest_bit|graycode[j]);
+            highest_bit<<=1;
+        }
+//        for(auto code:graycode) cout<<code<<endl;
+//        cout<<endl;
+        return graycode;
     }
 };
 
